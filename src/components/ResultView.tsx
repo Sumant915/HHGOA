@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Check, Copy } from "lucide-react";
 import * as htmlToImage from "html-to-image";
 import PfpFrameGraphic from "./graphics/PfpFrameGraphic";
 import BuilderCardGraphic from "./graphics/BuilderCardGraphic";
@@ -10,11 +10,22 @@ export default function ResultView({
     image,
     format,
     info,
+    preset = "GOA",
     onReset
 }: {
     image: string;
     format: "PFP" | "BUILDER_CARD";
-    info: { name: string; role: string; stack: string; title: string };
+    info: {
+        name: string;
+        github: string;
+        domain: string;
+        role: string;
+        status: string;
+        title: string;
+        tagline: string;
+        stack: string[];
+    };
+    preset?: "GOA" | "HACKER" | "SUNSET" | "OCEAN";
     onReset: () => void;
 }) {
     const graphicRef = useRef<HTMLDivElement>(null);
@@ -23,11 +34,12 @@ export default function ResultView({
     const [shareLoading, setShareLoading] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState("");
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const generate = async () => {
             setIsGenerating(true);
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 800)); // wait for layout/render
             try {
                 if (graphicRef.current) {
                     const url = await htmlToImage.toPng(graphicRef.current, {
@@ -42,7 +54,7 @@ export default function ResultView({
             }
         };
         generate();
-    }, [format, image, info]);
+    }, [format, image, info, preset]);
 
     const handleDownload = () => {
         if (!dataUrl) return;
@@ -59,7 +71,18 @@ export default function ResultView({
             const response = await fetch('/api/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: dataUrl, name: info.name })
+                body: JSON.stringify({
+                    image: dataUrl,
+                    name: info.name,
+                    github: info.github,
+                    domain: info.domain,
+                    role: info.role,
+                    status: info.status,
+                    title: info.title,
+                    tagline: info.tagline,
+                    stack: info.stack,
+                    preset: preset
+                })
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
@@ -74,97 +97,138 @@ export default function ResultView({
         }
     };
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     const openXShare = () => {
         const text = encodeURIComponent(`Just got my HH Goa 2026 builder identity. 🌴\n\nReady to build, ship & launch.\n\n#FrameInGoa #HHGoa2026\n\n${shareUrl}`);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
     };
 
     return (
-        <div className="flex w-full min-h-[85vh] pt-24 pb-12 relative px-4 md:px-0">
-
+        <div className="flex flex-col w-full gap-6">
+            
+            {/* Hidden High-Res Graphic for compilation */}
             <div className="absolute left-[-9999px] top-[-9999px]">
                 <div ref={graphicRef}>
-                    {format === "PFP" ? <PfpFrameGraphic image={image} /> : <BuilderCardGraphic image={image} info={info} />}
+                    {format === "PFP" ? (
+                        <PfpFrameGraphic image={image} preset={preset} />
+                    ) : (
+                        <BuilderCardGraphic image={image} info={info} preset={preset} />
+                    )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 w-full items-start">
-
-                {/* Left Side: Typography & Actions */}
-                <div className="col-span-1 md:col-span-5 flex flex-col justify-start md:sticky md:top-32 gap-16 order-2 md:order-1">
-                    <h2 className="font-heading text-7xl md:text-[8vw] font-bold uppercase tracking-tighter leading-[0.8] mix-blend-difference z-20">
-                        YOUR<br />BUILDER<br />IDENTITY.
-                    </h2>
-
-                    <div className="flex flex-col w-full border-t border-[#f4f4f0]/20 pt-8 gap-4">
-                        <button
-                            onClick={handleDownload} disabled={!dataUrl || isGenerating}
-                            className="group flex justify-between items-center w-full text-left py-4 hover:px-4 hover:bg-[#f4f4f0]/5 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
-                        >
-                            <span className="font-heading text-2xl md:text-3xl uppercase font-bold tracking-tighter">DOWNLOAD IMAGE</span>
-                            <ArrowUpRight size={28} className="group-hover:rotate-45 transition-transform" />
-                        </button>
-
-                        <button
-                            onClick={handleShare} disabled={!dataUrl || isGenerating || shareLoading}
-                            className="group flex justify-between items-center w-full text-left py-4 hover:px-4 hover:bg-[#f4f4f0]/5 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
-                        >
-                            <span className="font-heading text-2xl md:text-3xl uppercase font-bold tracking-tighter">
-                                {shareLoading ? "PREPARING..." : "SHARE TO X"}
-                            </span>
-                            <ArrowUpRight size={28} className="group-hover:rotate-45 transition-transform" />
-                        </button>
-
-                        <button
-                            onClick={onReset}
-                            className="group flex justify-between items-center w-full text-left py-4 hover:px-4 hover:bg-[#f4f4f0]/5 transition-all duration-300 mt-8 opacity-50 hover:opacity-100"
-                        >
-                            <span className="font-mono text-sm tracking-widest uppercase">CREATE ANOTHER</span>
-                            <ArrowUpRight size={20} className="transform rotate-90" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Right Side: Generated Image */}
-                <div className="col-span-1 md:col-span-7 flex justify-end w-full order-1 md:order-2">
-                    <div className="w-full md:w-[90%] relative">
-                        {isGenerating ? (
-                            <div className="w-full aspect-[4/5] bg-[#f4f4f0]/5 border border-[#f4f4f0]/10 flex flex-col items-center justify-center animate-pulse">
-                                <span className="font-mono text-xs tracking-widest uppercase opacity-50">COMPILING IDENTITY //</span>
-                            </div>
-                        ) : dataUrl ? (
-                            <div className="w-full shadow-2xl transition-transform hover:-translate-y-2 duration-500">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={dataUrl} alt="Builder Identity" className="w-full h-auto" />
-                            </div>
-                        ) : null}
-                    </div>
-                </div>
-
+            <div>
+                <h3 className="font-display text-xl font-black uppercase tracking-tight text-[#F4F0DF]">
+                    COMPILED PASSPORT
+                </h3>
+                <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C]">
+                    04 // COMPILATION COMPLETE
+                </span>
             </div>
 
+            <div className="flex flex-col gap-6">
+                
+                {/* Status Indicator */}
+                <div className="border border-[#54745C]/35 bg-[#000000]/60 backdrop-blur-sm p-3.5 flex justify-between items-center">
+                    <span className="font-mono text-[10px] tracking-widest text-[#54745C] uppercase">
+                        COMPILER_STATUS
+                    </span>
+                    <span className="font-mono text-[10px] text-[#E8D400] font-bold uppercase flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 bg-[#E8D400] inline-block rounded-full animate-pulse" />
+                        SUCCESSFULLY_COMPILED
+                    </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-3">
+                    <button
+                        onClick={handleDownload}
+                        disabled={!dataUrl || isGenerating}
+                        className="group flex justify-between items-center w-full bg-transparent border border-[#54745C]/35 hover:border-[#E8D400] p-3.5 hover:pl-5 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
+                    >
+                        <span className="font-display text-sm uppercase font-black tracking-tight text-[#F4F0DF] group-hover:text-[#E8D400]">
+                            DOWNLOAD IDENTITY
+                        </span>
+                        <ArrowUpRight size={18} className="text-[#F4F0DF] group-hover:text-[#E8D400] group-hover:rotate-45 transition-all duration-300" />
+                    </button>
+
+                    <button
+                        onClick={handleShare}
+                        disabled={!dataUrl || isGenerating || shareLoading}
+                        className="group flex justify-between items-center w-full bg-transparent border border-[#54745C]/35 hover:border-[#E8D400] p-3.5 hover:pl-5 transition-all duration-300 disabled:opacity-30 disabled:pointer-events-none"
+                    >
+                        <span className="font-display text-sm uppercase font-black tracking-tight text-[#F4F0DF] group-hover:text-[#E8D400]">
+                            {shareLoading ? "SHIELDING_DATA..." : "SHARE IDENTITY"}
+                        </span>
+                        <ArrowUpRight size={18} className="text-[#F4F0DF] group-hover:text-[#E8D400] group-hover:rotate-45 transition-all duration-300" />
+                    </button>
+
+                    <button
+                        onClick={onReset}
+                        className="group flex justify-between items-center w-full bg-transparent border border-[#54745C]/15 hover:border-[#54745C]/50 p-3.5 hover:pl-5 transition-all duration-300 mt-2 opacity-50 hover:opacity-100"
+                    >
+                        <span className="font-mono text-xs uppercase tracking-widest text-[#F4F0DF]/70">
+                            CREATE ANOTHER
+                        </span>
+                        <ArrowUpRight size={16} className="transform rotate-90" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Share Modal */}
             {showShareModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#030303]/90 backdrop-blur-md p-4">
-                    <div className="bg-[#0a0a0a] border border-[#f4f4f0]/20 p-8 w-full max-w-lg relative flex flex-col gap-8 shadow-2xl">
-                        <button onClick={() => setShowShareModal(false)} className="absolute top-6 right-6 opacity-50 hover:opacity-100 font-mono text-xs tracking-widest uppercase">
-                            CLOSE [X]
-                        </button>
-                        <h3 className="font-heading text-5xl font-bold uppercase tracking-tighter leading-none mt-2">SHARE<br />YOUR<br />SIGNAL.</h3>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#000000]/95 backdrop-blur-sm p-4">
+                    <div className="bg-[#000000] border border-[#54745C]/35 p-6 md:p-8 w-full max-w-md relative flex flex-col gap-6 shadow-2xl rounded-none">
+                        
+                        <div className="flex justify-between items-center border-b border-[#54745C]/15 pb-4">
+                            <span className="font-mono text-[9px] tracking-widest text-[#54745C] uppercase">
+                                NODE // SHARE_SIGNAL
+                            </span>
+                            <button
+                                onClick={() => setShowShareModal(false)}
+                                className="font-mono text-[10px] text-[#F4F0DF] hover:text-[#E8D400] transition-colors uppercase"
+                            >
+                                CLOSE [X]
+                            </button>
+                        </div>
 
+                        <div className="my-2">
+                            <h4 className="font-display text-2xl font-black uppercase tracking-tight text-[#F4F0DF] leading-none mb-1">
+                                SHARE IDENTITY
+                            </h4>
+                            <p className="font-mono text-[10px] text-[#54745C] uppercase tracking-wider">
+                                Broadcast your signal to the network.
+                            </p>
+                        </div>
+
+                        {/* Copy Link Input */}
                         <div className="flex flex-col gap-2">
-                            <span className="font-mono text-[10px] opacity-50 uppercase tracking-widest">URL</span>
-                            <input
-                                readOnly
-                                value={shareUrl}
-                                className="bg-transparent border-b border-[#f4f4f0]/20 p-2 text-[#f4f4f0] font-mono text-sm w-full outline-none focus:border-[#f4f4f0] selection:bg-[#f4f4f0] selection:text-black"
-                            />
+                            <span className="font-mono text-[9px] text-[#54745C] uppercase tracking-wider">IDENTITY_URL</span>
+                            <div className="relative flex items-stretch">
+                                <input
+                                    readOnly
+                                    value={shareUrl}
+                                    className="bg-[#000000] border border-[#54745C]/35 p-3 pr-12 text-[#F4F0DF] font-mono text-xs w-full outline-none focus:border-[#E8D400] selection:bg-[#F4F0DF] selection:text-black rounded-none"
+                                />
+                                <button
+                                    onClick={copyToClipboard}
+                                    className="absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center border-l border-[#54745C]/35 hover:text-[#E8D400] transition-colors"
+                                >
+                                    {copied ? <Check size={16} className="text-[#00FF66]" /> : <Copy size={16} />}
+                                </button>
+                            </div>
                         </div>
 
                         <button
                             onClick={openXShare}
-                            className="w-full bg-[#f4f4f0] text-black font-heading font-bold text-2xl py-6 uppercase tracking-tighter hover:bg-white hover:pl-4 transition-all duration-300"
+                            className="w-full bg-[#E8D400] text-black font-display font-black text-md py-4 uppercase tracking-tight hover:bg-white transition-all duration-300 flex items-center justify-center gap-2"
                         >
-                            POST DIRECTLY TO X ↗
+                            POST TO X ↗
                         </button>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ArrowDown, Loader2 } from "lucide-react";
+import { ArrowDown, Loader2, Upload } from "lucide-react";
 
 export default function UploadZone({ onUpload }: { onUpload: (dataUrl: string) => void }) {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -35,36 +35,50 @@ export default function UploadZone({ onUpload }: { onUpload: (dataUrl: string) =
     }, [onUpload]);
 
     return (
-        <div className="flex flex-col w-full min-h-[85vh] pt-24 pb-12 relative px-4 md:px-0">
-            <div className="flex flex-col justify-start w-full z-10 mb-12 md:mb-20">
-                <h2 className="font-heading text-6xl md:text-8xl font-bold uppercase tracking-tighter leading-none mb-4">
-                    YOUR PHOTO.
-                </h2>
-                <div className="flex items-center gap-4 text-[#f4f4f0]/50">
-                    <ArrowDown size={32} />
-                    <span className="font-mono text-sm tracking-widest uppercase">Select your image below</span>
+        <div className="flex flex-col w-full gap-4">
+            <span className="font-mono text-[10px] tracking-widest uppercase text-[#54745C]">
+                SOURCE / PHOTO
+            </span>
+
+            <label className="relative w-full aspect-[4/3] group cursor-pointer border border-[#54745C]/35 hover:border-[#E8D400] bg-[#000000]/60 backdrop-blur-sm transition-all duration-500 overflow-hidden flex flex-col justify-between p-6">
+                {/* Background Grid Pattern */}
+                <div className="absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#F4F0DF 1px, transparent 1px), linear-gradient(90deg, #F4F0DF 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+                <div className="absolute inset-0 bg-[#075A38]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+
+                <div className="flex justify-between items-start z-10 w-full">
+                    <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C]">
+                        SOURCE_NODE_01
+                    </span>
+                    <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C] text-right">
+                        JPG · PNG · HEIC
+                    </span>
                 </div>
-            </div>
 
-            <label className="relative flex-1 w-full group cursor-pointer border border-[#f4f4f0]/20 hover:border-[#f4f4f0] transition-colors duration-500 overflow-hidden flex flex-col justify-between p-6 md:p-12">
-                <div className="absolute inset-0 bg-[#f4f4f0]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                <div className="flex justify-between items-start z-10">
-                    <span className="font-mono text-xs tracking-widest uppercase opacity-50">Upload Node / 01</span>
-                    <span className="font-mono text-xs tracking-widest uppercase opacity-50 text-right">JPG · PNG · HEIC<br />Max Quality</span>
-                </div>
-
-                <div className="z-10 w-full flex flex-col items-center justify-center my-auto py-20">
+                <div className="z-10 w-full flex flex-col items-center justify-center my-auto">
                     {isProcessing ? (
-                        <div className="flex flex-col items-center gap-6">
-                            <Loader2 size={48} className="animate-spin opacity-50" />
-                            <span className="font-heading text-3xl uppercase tracking-widest">PROCESSING</span>
+                        <div className="flex flex-col items-center gap-4">
+                            <Loader2 size={32} className="animate-spin text-[#E8D400]" />
+                            <span className="font-mono text-xs uppercase tracking-widest text-[#F4F0DF]/60">PROCESSING_IMAGE...</span>
                         </div>
                     ) : (
-                        <span className="font-heading text-[10vw] md:text-[6vw] font-bold uppercase tracking-tighter leading-none text-center group-hover:scale-105 transition-transform duration-700 w-full text-balance">
-                            DROP. FRAME. BUILD.
-                        </span>
+                        <div className="flex flex-col items-center gap-4 text-center">
+                            <Upload size={28} className="text-[#54745C] group-hover:text-[#E8D400] transition-colors duration-300" />
+                            <span className="font-display text-lg md:text-xl uppercase font-black tracking-tight text-[#F4F0DF] group-hover:text-[#E8D400] transition-all duration-300">
+                                SELECT BUILDER PHOTO
+                            </span>
+                            <span className="font-mono text-[9px] tracking-widest text-[#54745C] uppercase">
+                                Click or drag file here
+                            </span>
+                        </div>
                     )}
+                </div>
+
+                <div className="flex justify-between items-end z-10 w-full">
+                    <div className="flex items-center gap-2">
+                        <ArrowDown size={14} className="text-[#54745C]" />
+                        <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C]">CHOOSE FILE</span>
+                    </div>
+                    <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C]">MAX 10MB</span>
                 </div>
 
                 <input
@@ -72,6 +86,7 @@ export default function UploadZone({ onUpload }: { onUpload: (dataUrl: string) =
                     accept="image/png, image/jpeg, image/jpg, image/heic, image/heif"
                     className="hidden"
                     onChange={handleFileChange}
+                    disabled={isProcessing}
                 />
             </label>
         </div>

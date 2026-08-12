@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #030303;
-  --foreground: #f4f4f0;
+  --background: #000000;
+  --foreground: #F4F0DF;
 }
 
 body {
@@ -21,6 +21,22 @@ body {
   }
 }
 
+.font-heading {
+  font-family: var(--font-space-grotesk), sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-archivo), sans-serif;
+}
+
+.font-serif-display {
+  font-family: var(--font-playfair), serif;
+}
+
+.font-mono {
+  font-family: var(--font-space-mono), monospace;
+}
+
 .noise-bg {
   position: fixed;
   top: 0;
@@ -35,6 +51,6 @@ body {
 }
 
 ::selection {
-  background: #f4f4f0;
-  color: #030303;
-}
+  background: #F4F0DF;
+  color: #000000;
+}

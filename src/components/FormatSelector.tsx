@@ -4,51 +4,54 @@ import { motion } from "framer-motion";
 
 export default function FormatSelector({ onSelect }: { onSelect: (format: "PFP" | "BUILDER_CARD") => void }) {
     return (
-        <div className="flex flex-col w-full min-h-[85vh] pt-24 pb-12 relative px-4 md:px-0">
-
-            <div className="mb-16 md:mb-24">
-                <h2 className="font-heading text-4xl md:text-6xl font-bold uppercase tracking-tighter leading-none mb-4">
-                    YOUR FORMAT.
-                </h2>
-                <span className="font-mono text-xs tracking-widest uppercase opacity-50">HOW DO YOU WANT TO REPRESENT YOURSELF?</span>
+        <div className="flex flex-col w-full gap-6">
+            <div>
+                <h3 className="font-display text-xl font-black uppercase tracking-tight text-[#F4F0DF]">
+                    SELECT FORMAT
+                </h3>
+                <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C]">
+                    02 // CHOOSE REPRESENTATION FORMAT
+                </span>
             </div>
 
-            <div className="flex flex-col gap-0 border-t border-[#f4f4f0]/20">
+            <div className="flex flex-col gap-4">
                 <button
                     onClick={() => onSelect("PFP")}
-                    className="group flex flex-col md:flex-row justify-between items-start md:items-center py-12 md:py-16 border-b border-[#f4f4f0]/20 text-left hover:bg-[#f4f4f0]/5 transition-colors duration-500 px-4 md:px-8 -mx-4 md:-mx-8"
+                    className="group relative flex flex-col justify-between items-start p-5 border border-[#54745C]/35 hover:border-[#E8D400] bg-[#000000]/60 backdrop-blur-sm transition-all duration-300 text-left w-full overflow-hidden"
                 >
-                    <div className="flex flex-col w-full md:w-auto mb-6 md:mb-0">
-                        <span className="font-mono text-xs tracking-widest uppercase opacity-50 mb-2">01 / FORMAT</span>
-                        <h3 className="font-heading text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none group-hover:translate-x-4 transition-transform duration-500">
-                            PFP FRAME
-                        </h3>
+                    <div className="absolute inset-0 bg-[#075A38]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <div className="flex justify-between items-start w-full z-10">
+                        <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C] mb-2">02.1 / FORMAT</span>
+                        <span className="font-mono text-[9px] tracking-widest uppercase text-[#E8D400] opacity-0 group-hover:opacity-100 transition-opacity duration-300">SELECT ↗</span>
                     </div>
-                    <p className="font-mono text-xs md:text-sm uppercase tracking-widest opacity-50 md:text-right max-w-sm leading-relaxed group-hover:-translate-x-4 transition-transform duration-500">
-                        YOUR PHOTO.
-                        <br />
-                        HH GOA AROUND IT.
-                        <br />
-                        1:1 RATIO.
+
+                    <h4 className="font-display text-xl font-black uppercase tracking-tight text-[#F4F0DF] group-hover:text-[#E8D400] transition-colors duration-300 z-10 mt-2">
+                        PFP FRAME
+                    </h4>
+                    
+                    <p className="font-mono text-[9px] uppercase tracking-widest text-[#54745C] group-hover:text-[#F4F0DF]/80 transition-colors duration-300 leading-relaxed mt-1 z-10">
+                        1:1 SQUARE FORMAT // PRE-CONFIGURED WITH THE OFFICIAL HACKER HOUSE GOA PROFILE STAMP.
                     </p>
                 </button>
 
                 <button
                     onClick={() => onSelect("BUILDER_CARD")}
-                    className="group flex flex-col md:flex-row justify-between items-start md:items-center py-12 md:py-16 border-b border-[#f4f4f0]/20 text-left hover:bg-[#f4f4f0]/5 transition-colors duration-500 px-4 md:px-8 -mx-4 md:-mx-8"
+                    className="group relative flex flex-col justify-between items-start p-5 border border-[#54745C]/35 hover:border-[#E8D400] bg-[#000000]/60 backdrop-blur-sm transition-all duration-300 text-left w-full overflow-hidden"
                 >
-                    <div className="flex flex-col w-full md:w-auto mb-6 md:mb-0">
-                        <span className="font-mono text-xs tracking-widest uppercase opacity-50 mb-2">02 / FORMAT</span>
-                        <h3 className="font-heading text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none group-hover:translate-x-4 transition-transform duration-500">
-                            BUILDER CARD
-                        </h3>
+                    <div className="absolute inset-0 bg-[#075A38]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                    <div className="flex justify-between items-start w-full z-10">
+                        <span className="font-mono text-[9px] tracking-widest uppercase text-[#54745C] mb-2">02.2 / FORMAT</span>
+                        <span className="font-mono text-[9px] tracking-widest uppercase text-[#E8D400] opacity-0 group-hover:opacity-100 transition-opacity duration-300">SELECT ↗</span>
                     </div>
-                    <p className="font-mono text-xs md:text-sm uppercase tracking-widest opacity-50 md:text-right max-w-sm leading-relaxed group-hover:-translate-x-4 transition-transform duration-500">
-                        YOUR BUILDER IDENTITY.
-                        <br />
-                        READY TO SHARE.
-                        <br />
-                        9:16 STORY RATIO.
+
+                    <h4 className="font-display text-xl font-black uppercase tracking-tight text-[#F4F0DF] group-hover:text-[#E8D400] transition-colors duration-300 z-10 mt-2">
+                        BUILDER CARD
+                    </h4>
+                    
+                    <p className="font-mono text-[9px] uppercase tracking-widest text-[#54745C] group-hover:text-[#F4F0DF]/80 transition-colors duration-300 leading-relaxed mt-1 z-10">
+                        9:16 COLLECTIBLE FORMAT // SHOWCASING YOUR FULL PROFILE: NAME, ROLE, TECH STACK, AND GENERATED BUILDER CODE.
                     </p>
                 </button>
             </div>
